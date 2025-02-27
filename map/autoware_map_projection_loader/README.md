@@ -67,7 +67,6 @@ vertical_datum: WGS84
 map_origin:
   latitude: 35.6762 # [deg]
   longitude: 139.6503 # [deg]
-  altitude: 0.0 # [m]
 ```
 
 ### Using LocalCartesian
@@ -83,12 +82,12 @@ vertical_datum: WGS84
 map_origin:
   latitude: 35.6762 # [deg]
   longitude: 139.6503 # [deg]
-  altitude: 0.0 # [m]
 ```
 
 ### Using TransverseMercator
 
 If you want to use Transverse Mercator projection, please specify the map origin as well.
+And specify the scale_factor of the map. If you didn't specify the scale_factor, it will be set 0.9996 as default value.
 
 ```yaml
 # map_projector_info.yaml
@@ -97,7 +96,7 @@ vertical_datum: WGS84
 map_origin:
   latitude: 35.6762 # [deg]
   longitude: 139.6503 # [deg]
-  altitude: 0.0 # [m]
+scale_factor: 0.9996
 ```
 
 ## Published Topics

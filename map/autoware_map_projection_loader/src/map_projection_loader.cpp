@@ -36,7 +36,6 @@ autoware_map_msgs::msg::MapProjectorInfo load_info_from_yaml(const std::string &
   if (msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::MGRS) {
     msg.vertical_datum = data["vertical_datum"].as<std::string>();
     msg.mgrs_grid = data["mgrs_grid"].as<std::string>();
-
   } else if (
     msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::LOCAL_CARTESIAN_UTM ||
     msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::LOCAL_CARTESIAN ||
@@ -44,8 +43,7 @@ autoware_map_msgs::msg::MapProjectorInfo load_info_from_yaml(const std::string &
     msg.vertical_datum = data["vertical_datum"].as<std::string>();
     msg.map_origin.latitude = data["map_origin"]["latitude"].as<double>();
     msg.map_origin.longitude = data["map_origin"]["longitude"].as<double>();
-    msg.map_origin.altitude = data["map_origin"]["altitude"].as<double>();
-
+    msg.map_origin.altitude = 0.0;
   } else if (msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::LOCAL) {
     ;  // do nothing
 
@@ -64,6 +62,27 @@ autoware_map_msgs::msg::MapProjectorInfo load_info_from_yaml(const std::string &
       "LocalCartesianUTM, "
       "TransverseMercator, and local");
   }
+
+  // set scale factor
+  if(msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::TRANSVERSE_MERCATOR) {
+    if (data["scale_factor"]) {
+      msg.scale_factor = data["scale_factor"].as<double>();
+    } else {
+      msg.scale_factor = 0.9996;
+    }
+  } else if (msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::MGRS ||
+             msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::LOCAL_CARTESIAN_UTM) {
+    msg.scale_factor = 0.9996;
+  } else if (msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::LOCAL ||
+             msg.projector_type == autoware_map_msgs::msg::MapProjectorInfo::LOCAL_CARTESIAN) {
+    msg.scale_factor = 1.0;
+  }
+
+  if (msg.scale_factor <= 0.0) {
+    throw std::runtime_error(
+      "Invalid scale factor. The scale factor must be a value greater than 0.");
+  }
+
   return msg;
 }
 
